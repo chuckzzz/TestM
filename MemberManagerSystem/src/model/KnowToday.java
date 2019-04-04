@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *@author：     张谦
+ *@author：     chuck
  *@version：    1.0版
  *     日期：      2016-9-6下午4:53:22
  */
