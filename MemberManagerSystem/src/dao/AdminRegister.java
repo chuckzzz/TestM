@@ -21,7 +21,7 @@ public class AdminRegister {
 	private int uu;
 
 	public AdminRegister(){
-		System.out.println("aa");
+		System.out.println("fuckgithub");
 		System.out.println("aa");
 		//创建新的对象
 		for(int j=0;j<d.admin.length;j++){
