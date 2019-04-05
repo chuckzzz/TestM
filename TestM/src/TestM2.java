@@ -47,9 +47,6 @@ public class TestM2 {
 		String st = "Effectiv Java!";
 		ob = ob+st;
 		
-		System.out.println(ob);
-		ob+=st;
-		System.out.println(ob);
 		System.out.println("2+2"+2+2+2+'@'+'h');
 		//字符打印问题
 		String letters= "ABC";
