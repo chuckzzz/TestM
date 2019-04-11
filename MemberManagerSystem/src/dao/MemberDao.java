@@ -1,7 +1,7 @@
 /**
  *	@author：     chuck
  *	@version：    1.0版
- *  日期：      2016-9-20下午6:57:30
+ *  日期：      2019-4-10下午6:57:30
  */
 
 
@@ -180,6 +180,7 @@ public class MemberDao {
 		list(uu);
 		
 	}
+	
 	//读TXT
 	private void readTxt() {
 		try {
@@ -193,13 +194,14 @@ public class MemberDao {
 			Pattern p3 = Pattern.compile("生日：");
 			Pattern p4 = Pattern.compile("地址：");
 			Pattern p5 = Pattern.compile("手机号：");
-			
+			//读数据
 			while((s =br.readLine())!=null) {
 				Matcher m1 = p1.matcher(s);
 				Matcher m2 = p2.matcher(s);
 				Matcher m3 = p3.matcher(s);
 				Matcher m4 = p4.matcher(s);
 				Matcher m5 = p5.matcher(s);
+				//匹配数据
 				if(m1.find()&&m2.find()&&m3.find()&&m4.find()&&m5.find()) {
 					int t1 = m1.end();
 					String e1 =s.substring(t1,m2.start());
