@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 /**
  *@author：     chuck
- *@version：    1.0版
+ *@version：    2.0版
  *     日期：      2016-9-6下午4:53:22
  */
 

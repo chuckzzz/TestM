@@ -1,6 +1,6 @@
 /**
  *	@author：     chuck
- *	@version：    2.0
+ *	@version：    2.0版
  *  日期：      2019-4-10下午6:57:30
  */
 
