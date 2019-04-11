@@ -13,5 +13,5 @@ import model.Member;
 
 public class Data {
 	public Admin[] admin = new Admin[3];
-	public Member[] Member = new Member[20];
+	public Member[] member = new Member[20];
 }

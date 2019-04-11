@@ -7,6 +7,19 @@
 
 package dao;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -21,22 +34,23 @@ public class MemberDao {
 	int p=0;
 	//初始化
 	public MemberDao(){
-		for(int i=0;i<d.Member.length;i++){
-			d.Member[i] = new Member();
+		for(int i=0;i<d.member.length;i++){
+			d.member[i] = new Member();
 		}
 		initial();
 		
 	}
 	//取出存在的会员P个
 	public void initial(){
-		for(int i=0;i<d.Member.length;i++){
-			if(d.Member[i].getName()!=null) {
+		readTxt();
+		for(int i=0;i<d.member.length;i++){
+			if(d.member[i].getName()!=null) {
 				p=i;
 				p++;
 			}
 		}
 		for(int i=0;i<p;i++){
-			d.Member[i].setNumber("00"+i);
+			d.member[i].setNumber("00"+i);
 		}
 	}
 	//增加
@@ -69,8 +83,8 @@ public class MemberDao {
 			}
 			
 			//判断输入会员是否重复，如果重复得确认
-			for(int j=0;j<d.Member.length;j++){
-				while(name.equals(d.Member[j].getName())&&d.Member[j].getId()==uu){
+			for(int j=0;j<d.member.length;j++){
+				while(name.equals(d.member[j].getName())&&d.member[j].getId()==uu){
 					n++;
 					System.out.println("会员的名字有重复，请重复输入的用户名：");
 					aname=name;
@@ -154,17 +168,106 @@ public class MemberDao {
 		}
 		
 		//添加会员信息
-		d.Member[p].setNumber("00"+p);
-		d.Member[p].setName(name);
-		d.Member[p].setBornth(bornth);
-		d.Member[p].setAddress(add);
-		d.Member[p].setPhoneNumber(phoneNumber);
-		d.Member[p].setId(uu);
+		d.member[p].setNumber("00"+p);
+		d.member[p].setName(name);
+		d.member[p].setBornth(bornth);
+		d.member[p].setAddress(add);
+		d.member[p].setPhoneNumber(phoneNumber);
+		d.member[p].setId(uu);
+		
+		save(d);
 		//列表
 		list(uu);
 		
 	}
+	//读TXT
+	private void readTxt() {
+		try {
+			FileInputStream fis = new FileInputStream("E://a.txt");
+			InputStreamReader isr = new InputStreamReader(fis);
+			BufferedReader br = new BufferedReader(isr);
+			String s =null;
+			int x = 0;
+			Pattern p1 = Pattern.compile("编号：");
+			Pattern p2 = Pattern.compile("名字：");
+			Pattern p3 = Pattern.compile("生日：");
+			Pattern p4 = Pattern.compile("地址：");
+			Pattern p5 = Pattern.compile("手机号：");
+			
+			while((s =br.readLine())!=null) {
+				Matcher m1 = p1.matcher(s);
+				Matcher m2 = p2.matcher(s);
+				Matcher m3 = p3.matcher(s);
+				Matcher m4 = p4.matcher(s);
+				Matcher m5 = p5.matcher(s);
+				if(m1.find()&&m2.find()&&m3.find()&&m4.find()&&m5.find()) {
+					int t1 = m1.end();
+					String e1 =s.substring(t1,m2.start());
+					if(!"null".equals(e1))
+					d.member[x].setNumber(e1);
+					int t2 =m2.end();
+					int t21 =m3.start();
+					String e2 =s.substring(t2,t21);
+					if(!"null".equals(e2))
+					d.member[x].setName(e2);
+					int t3 =m3.end();
+					int t31 =m4.start();
+					String e3 =s.substring(t3,t31);
+					if(!"null".equals(e3))
+					d.member[x].setBornth(e3);
+					int t4 =m4.end();
+					int t41 =m5.start();
+					String e4 =s.substring(t4,t41);
+					if(!"null".equals(e4))
+					d.member[x].setAddress(s.substring(t4,t41));
+					int t5 =m5.end();
+					String e5 =s.substring(t5,s.length());
+					if(!"null".equals(e5))
+					d.member[x].setPhoneNumber(e5);
+					x++;
 
+				}
+				
+			}
+			
+			br.close();
+			isr.close();
+			fis.close();
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+	}
+	//保存数据到txt文件中
+		public void save(Data d) {
+			try {
+				FileOutputStream fos = new FileOutputStream("E://a.txt");
+				OutputStreamWriter dos = new OutputStreamWriter(fos);
+				BufferedWriter bw = new BufferedWriter(dos);
+				
+				
+				
+				int len = d.member.length;
+				for(int i=0;i<len;i++) {
+					bw.write("编号："+d.member[i].getNumber()+"名字："+d.member[i].getName()+
+							"生日："+d.member[i].getBornth()+"地址："+d.member[i].getAddress()+
+							"手机号："+d.member[i].getPhoneNumber());
+					bw.newLine();
+				
+				}
+				
+				bw.flush();
+				bw.close();
+				dos.close();
+				fos.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	//删除
 	public void delete(int uu){
 		initial();
@@ -172,8 +275,8 @@ public class MemberDao {
 		Scanner in = new Scanner(System.in);
 		String number = in.nextLine();
 		for(int i=0;i<p;i++){
-			if(d.Member[i].getNumber().equals(number)&&d.Member[i].getId()==uu){
-				d.Member[i].rush();
+			if(d.member[i].getNumber().equals(number)&&d.member[i].getId()==uu){
+				d.member[i].rush();
 				System.out.println("删除会员成功！");
 				return;
 			}
@@ -187,8 +290,8 @@ public class MemberDao {
 		System.out.println("骁龙二部健身会员管理系统>会员信息管理>请输入要修改会员编号");
 		String number = sc.nextLine();
 		for(int i=0;i<p;i++){
-      		if(d.Member[i].getNumber().equals(number)&&d.Member[i].getId()==uu){
-      			System.out.println("   "+d.Member[i].getNumber()+"        "+d.Member[i].getName()+"                "+d.Member[i].getBornth()+"                    "+d.Member[i].getAddress()+"                      "+d.Member[i].getPhoneNumber());
+      		if(d.member[i].getNumber().equals(number)&&d.member[i].getId()==uu){
+      			System.out.println("   "+d.member[i].getNumber()+"        "+d.member[i].getName()+"                "+d.member[i].getBornth()+"                    "+d.member[i].getAddress()+"                      "+d.member[i].getPhoneNumber());
       			
       			System.out.println("骁龙二部健身会员管理系统>会员信息管理>修改手机号码为：");
       			String phoneNumber = null;
@@ -250,8 +353,8 @@ public class MemberDao {
 	}
 	//修改地址和电话
 	public void addThis(String phoneNumber,String address,int i){
-		d.Member[i].setPhoneNumber(phoneNumber);
-		d.Member[i].setAddress(address);
+		d.member[i].setPhoneNumber(phoneNumber);
+		d.member[i].setAddress(address);
 		System.out.println("修改成功！");
 	}
 	//查找
@@ -277,7 +380,7 @@ public class MemberDao {
               	number = sc.nextLine();
               	//判断存在否
             	for(int i=0;i<p;i++){
-              		if(d.Member[i].getId()==uu&&d.Member[i].getNumber().equals(number)){
+              		if(d.member[i].getId()==uu&&d.member[i].getNumber().equals(number)){
               			e1=true;
               		}
               	}
@@ -298,9 +401,9 @@ public class MemberDao {
              	System.out.println("        会员号\t	                                姓名\t\t                      生日\t\t                  地址\t\t                手机号\t\t");
         		System.out.println("-------------|------------------------|-----------------------|-----------------------|-----------------------");
   				for(int i=0;i<p;i++){
-  					if(d.Member[i].getId()==uu&&d.Member[i].getNumber().equals(number)&&d.Member[i].getName()!=null){
+  					if(d.member[i].getId()==uu&&d.member[i].getNumber().equals(number)&&d.member[i].getName()!=null){
   						//System.out.println("      "+d.Member[i].getNumber()+"\t                  "+d.Member[i].getName()+"\t                 "+d.Member[i].getBornth()+"\t                 "+d.Member[i].getAddress()+"\t                   "+d.Member[i].getPhoneNumber());
-  						System.out.println("   "+d.Member[i].getNumber()+"\t\t"+"                               "+d.Member[i].getName()+"\t\t"+"     "+d.Member[i].getBornth()+"\t\t"+"                 "+d.Member[i].getAddress()+"\t\t"+"   "+d.Member[i].getPhoneNumber());
+  						System.out.println("   "+d.member[i].getNumber()+"\t\t"+"                               "+d.member[i].getName()+"\t\t"+"     "+d.member[i].getBornth()+"\t\t"+"                 "+d.member[i].getAddress()+"\t\t"+"   "+d.member[i].getPhoneNumber());
   						continue;
   					}
   				}
@@ -325,7 +428,7 @@ public class MemberDao {
   				}
   				//如果存在就让e2为true
   				for(int i=0;i<p;i++){
-  					if(d.Member[i].getName().equals(name)){
+  					if(d.member[i].getName().equals(name)){
   						e2=true;
   					}
   				}
@@ -346,9 +449,9 @@ public class MemberDao {
   				System.out.println("        会员号\t	                                姓名\t\t                      生日\t\t                  地址\t\t                手机号\t\t");
   				System.out.println("-------------|------------------------|-----------------------|-----------------------|-----------------------");
   				for(int i=0;i<p;i++){
-  					if(d.Member[i].getId()==uu&&d.Member[i].getName().equals(name)&&d.Member[i].getName()!=null){
+  					if(d.member[i].getId()==uu&&d.member[i].getName().equals(name)&&d.member[i].getName()!=null){
   						//System.out.println("   "+d.Member[i].getNumber()+"        "+d.Member[i].getName()+"                "+d.Member[i].getBornth()+"                    "+d.Member[i].getAddress()+"                      "+d.Member[i].getPhoneNumber());
-  						System.out.println("   "+d.Member[i].getNumber()+"\t\t"+"                               "+d.Member[i].getName()+"\t\t"+"     "+d.Member[i].getBornth()+"\t\t"+"                 "+d.Member[i].getAddress()+"\t\t"+"   "+d.Member[i].getPhoneNumber());
+  						System.out.println("   "+d.member[i].getNumber()+"\t\t"+"                               "+d.member[i].getName()+"\t\t"+"     "+d.member[i].getBornth()+"\t\t"+"                 "+d.member[i].getAddress()+"\t\t"+"   "+d.member[i].getPhoneNumber());
   						continue;
   					}
   				}
@@ -360,7 +463,7 @@ public class MemberDao {
 				boolean e3 = false;
             	bornth = sc.nextLine();
             	for(int i=0;i<p;i++){
-					if(d.Member[i].getId()==uu&&d.Member[i].getBornth().equals(bornth)){
+					if(d.member[i].getId()==uu&&d.member[i].getBornth().equals(bornth)){
 						e3=true;
 					}
 				}
@@ -381,9 +484,9 @@ public class MemberDao {
             	System.out.println("        会员号\t	                                姓名\t\t                      生日\t\t                  地址\t\t                手机号\t\t");
         		System.out.println("-------------|------------------------|-----------------------|-----------------------|-----------------------");
 				for(int i=0;i<p;i++){
-					if(d.Member[i].getId()==uu&&d.Member[i].getBornth().equals(bornth)){
+					if(d.member[i].getId()==uu&&d.member[i].getBornth().equals(bornth)){
 						//System.out.println("   "+d.Member[i].getNumber()+"        "+d.Member[i].getName()+"                "+d.Member[i].getBornth()+"                    "+d.Member[i].getAddress()+"                      "+d.Member[i].getPhoneNumber());
-						System.out.println("   "+d.Member[i].getNumber()+"\t\t"+"                               "+d.Member[i].getName()+"\t\t"+"     "+d.Member[i].getBornth()+"\t\t"+"                 "+d.Member[i].getAddress()+"\t\t"+"   "+d.Member[i].getPhoneNumber());
+						System.out.println("   "+d.member[i].getNumber()+"\t\t"+"                               "+d.member[i].getName()+"\t\t"+"     "+d.member[i].getBornth()+"\t\t"+"                 "+d.member[i].getAddress()+"\t\t"+"   "+d.member[i].getPhoneNumber());
 						continue;
 					}
 				}
@@ -394,7 +497,7 @@ public class MemberDao {
             	boolean e4 = false;
 				phoneNumber = sc.nextLine();
 				for(int i=0;i<p;i++){
-					if(d.Member[i].getId()==uu&&d.Member[i].getPhoneNumber().equals(phoneNumber)){
+					if(d.member[i].getId()==uu&&d.member[i].getPhoneNumber().equals(phoneNumber)){
 						e4=true;
 					}
 				}
@@ -414,9 +517,9 @@ public class MemberDao {
 				System.out.println("        会员号\t	                                姓名\t\t                      生日\t\t                  地址\t\t                手机号\t\t");
 				System.out.println("-------------|------------------------|-----------------------|-----------------------|-----------------------");
 				for(int i=0;i<p;i++){
-					if(d.Member[i].getId()==uu&&d.Member[i].getPhoneNumber().equals(phoneNumber)){
+					if(d.member[i].getId()==uu&&d.member[i].getPhoneNumber().equals(phoneNumber)){
 						//System.out.println("   "+d.Member[i].getNumber()+"        "+d.Member[i].getName()+"                "+d.Member[i].getBornth()+"                    "+d.Member[i].getAddress()+"                      "+d.Member[i].getPhoneNumber());
-						System.out.println("   "+d.Member[i].getNumber()+"\t\t"+"                               "+d.Member[i].getName()+"\t\t"+"     "+d.Member[i].getBornth()+"\t\t"+"                 "+d.Member[i].getAddress()+"\t\t"+"   "+d.Member[i].getPhoneNumber());
+						System.out.println("   "+d.member[i].getNumber()+"\t\t"+"                               "+d.member[i].getName()+"\t\t"+"     "+d.member[i].getBornth()+"\t\t"+"                 "+d.member[i].getAddress()+"\t\t"+"   "+d.member[i].getPhoneNumber());
 						continue;
 					}
 				}
@@ -429,7 +532,7 @@ public class MemberDao {
 				address = sc.nextLine();
 				//
 				for(int i=0;i<p;i++){
-					if(d.Member[i].getId()==uu&&d.Member[i].getAddress().equals(address)){
+					if(d.member[i].getId()==uu&&d.member[i].getAddress().equals(address)){
 						e5=true;
 					}
 				}
@@ -449,9 +552,9 @@ public class MemberDao {
 				System.out.println("        会员号\t	                                姓名\t\t                      生日\t\t                  地址\t\t                手机号\t\t");
 				System.out.println("-------------|------------------------|-----------------------|-----------------------|-----------------------");
 				for(int i=0;i<p;i++){
-					if(d.Member[i].getId()==uu&&d.Member[i].getAddress().equals(address)){
+					if(d.member[i].getId()==uu&&d.member[i].getAddress().equals(address)){
 						//System.out.println("   "+d.Member[i].getNumber()+"        "+d.Member[i].getName()+"                "+d.Member[i].getBornth()+"                    "+d.Member[i].getAddress()+"                      "+d.Member[i].getPhoneNumber());
-						System.out.println("   "+d.Member[i].getNumber()+"\t\t"+"                               "+d.Member[i].getName()+"\t\t"+"     "+d.Member[i].getBornth()+"\t\t"+"                 "+d.Member[i].getAddress()+"\t\t"+"   "+d.Member[i].getPhoneNumber());
+						System.out.println("   "+d.member[i].getNumber()+"\t\t"+"                               "+d.member[i].getName()+"\t\t"+"     "+d.member[i].getBornth()+"\t\t"+"                 "+d.member[i].getAddress()+"\t\t"+"   "+d.member[i].getPhoneNumber());
 						continue;
 					}
 				}
@@ -470,9 +573,9 @@ public class MemberDao {
 	public void list(int uu){
 		System.out.println("        会员号\t	                                姓名\t\t                      生日\t\t                  地址\t\t                手机号\t\t");
 		System.out.println("-------------|------------------------|-----------------------|-----------------------|-----------------------");
-		for(int i=0;i<d.Member.length ;i++){
-			if(d.Member[i].getId()==uu&&d.Member[i].getName()!=null){
-				System.out.println("   "+d.Member[i].getNumber()+"\t\t"+"                               "+d.Member[i].getName()+"\t\t"+"     "+d.Member[i].getBornth()+"\t\t"+"                 "+d.Member[i].getAddress()+"\t\t"+"   "+d.Member[i].getPhoneNumber());
+		for(int i=0;i<d.member.length ;i++){
+			if(d.member[i].getId()==uu&&d.member[i].getName()!=null){
+				System.out.println("   "+d.member[i].getNumber()+"\t\t"+"                               "+d.member[i].getName()+"\t\t"+"     "+d.member[i].getBornth()+"\t\t"+"                 "+d.member[i].getAddress()+"\t\t"+"   "+d.member[i].getPhoneNumber());
 			}
 		}
 		initial();

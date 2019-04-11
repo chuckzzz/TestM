@@ -12,7 +12,6 @@ import view.Select;
 
 
 public class TestMemberStart {
-	static Select select = new Select();
 	
 	public static void main(String[] args) {
 		new Select().choice();
